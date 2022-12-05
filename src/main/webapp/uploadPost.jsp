@@ -1,16 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="wp.*"%>
- <%
- request.setCharacterEncoding("UTF-8");
-
- String bid = request.getParameter("boardId");
- String uid = request.getParameter("userId");
- String tit = request.getParameter("title");
- String con = request.getParameter("content");
+<%
+request.setCharacterEncoding("UTF-8");
+User user = UserAPI.getSessionUser(session);
  
- PostAPI.uploadPost(bid, uid, tit, con);
- %>
+String bid = request.getParameter("boardId");
+String uid = user.getId();
+String title = request.getParameter("title");
+String con = request.getParameter("content");
+
+PostAPI.uploadPost(bid, uid, title, con);
+%>
 <!DOCTYPE html>
 <html>
 <head>

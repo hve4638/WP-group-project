@@ -7,27 +7,50 @@ import javax.naming.NamingException;
 
 
 public class PostAPI {
-	public static List<Post> getPostFormBoard(int boardId, int count, int page) throws NamingException, SQLException {
+	public static int getBoardContentLength(String boardId) throws NamingException, SQLException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		try {
+			String sql = "SELECT COUNT(*) FROM post WHERE boardId = ?";
+			
+			conn = ConnectionPool.get();
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, boardId);
+			
+			rs = stmt.executeQuery();
+			rs.next();
+		    return rs.getInt(1);
+		}
+		finally {
+			if (rs != null) rs.close();
+			if (stmt!= null) stmt.close();
+			if (conn!=null) conn.close();
+		}
+	}
+	
+	public static List<Post> getPostFormBoard(String boardId, int count, int page) throws NamingException, SQLException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		List<Post> postList = new ArrayList<Post>();
 		try {
-			String sql = "SELECT * FROM post WHERE ? ORDER BY postNo DESC";
+			String sql = "SELECT * FROM post WHERE boardId = ? ORDER BY postNo DESC LIMIT ? OFFSET ?";
 			
 			conn = ConnectionPool.get();
 			stmt = conn.prepareStatement(sql);
-			stmt.setInt(1, boardId);
-
+			stmt.setString(1, boardId);
+			stmt.setInt(2, count);
+			stmt.setInt(3, (page-1)*count);
+			
 			rs = stmt.executeQuery();
+			int skipCount = count * (page-1);
+			if (skipCount < 0) skipCount = 0;
 		    while(rs.next()) {
 		    	Post post = new Post();
 		    	modifyPost(post, rs);
 		    	postList.add(post);
-		    }
-		    
-		    for(int i = ((page-1)*10); i<page+count; i++) {
-		    	postList.get(i);
 		    }
 		    
 		    return postList;
@@ -138,7 +161,7 @@ public class PostAPI {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
-			String sql = "INSERT INTO post VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO post VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			conn = ConnectionPool.get();
 			stmt = conn.prepareStatement(sql);
