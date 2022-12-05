@@ -11,31 +11,29 @@ public class WPSQL {
 	Connection conn;
 	PreparedStatement stmt;
 	ResultSet rs;
-	
-	public WPSQL() {
-		conn = null;
-		stmt = null;
-		rs = null;
-	}
-	
-	public ResultSet Query(String sql, Object[] args) throws NamingException, SQLException {
+
+	public WPSQL(String sql) throws NamingException, SQLException {
 		conn = ConnectionPool.get();
 		stmt = conn.prepareStatement(sql);
-		insertArgs(stmt, args);
+		rs = null;
+	}
+
+	public WPSQL(String sql, Object...args) throws NamingException, SQLException {
+		this(sql);
+		setArgs(args);
+	}
+	
+	public ResultSet query(Object...args) throws NamingException, SQLException {
 		rs = stmt.executeQuery();
-		
 		return rs;
 	}
 	
-	public boolean Update(String sql, Object[] args) throws SQLException, NamingException {
-		conn = ConnectionPool.get();
-		stmt = conn.prepareStatement(sql);
-		insertArgs(stmt, args);
+	public boolean update(String sql, Object...args) throws SQLException, NamingException {
 		int count = stmt.executeUpdate();
 		return (count > 0) ? true : false;
 	}
 	
-	private void insertArgs(PreparedStatement stmt, Object[] args) throws SQLException {
+	public void setArgs(Object...args) throws SQLException {
 		int index = 1;
 		for(Object arg : args) {
 			if (arg instanceof Integer) {
@@ -43,12 +41,13 @@ public class WPSQL {
 			} else if (arg instanceof String) {
 				stmt.setString(index, (String)arg);
 			}
+			index++;
 		}
 	}
 	
 	public void close() throws SQLException {
-		conn.close();
-		stmt.close();
-		rs.close();
+		if (conn != null) conn.close();
+		if (stmt != null) stmt.close();
+		if (rs != null) rs.close();
 	}
 }

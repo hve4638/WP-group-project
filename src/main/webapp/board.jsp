@@ -31,6 +31,7 @@
 </head>
 <body>
 길이 : <%=posts.size() %> <br>
+총 개수 d : <%=PostAPI.getPostAmount(boardId) %>
 <%
 	for (Post post : posts) {
 %>

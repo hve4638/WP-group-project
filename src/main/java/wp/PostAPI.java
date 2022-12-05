@@ -1,5 +1,5 @@
 package wp;
-import util.ConnectionPool;
+import util.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,46 +7,28 @@ import javax.naming.NamingException;
 
 
 public class PostAPI {
-	public static int getBoardContentLength(String boardId) throws NamingException, SQLException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
+	public static int getPostAmount(String boardId) throws NamingException, SQLException {
+		WPSQL sql = new WPSQL("SELECT COUNT(*) FROM post WHERE boardId = ?");
 		ResultSet rs = null;
 		
 		try {
-			String sql = "SELECT COUNT(*) FROM post WHERE boardId = ?";
-			
-			conn = ConnectionPool.get();
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, boardId);
-			
-			rs = stmt.executeQuery();
+			sql.setArgs(boardId);
+			rs = sql.query();
 			rs.next();
 		    return rs.getInt(1);
 		}
 		finally {
-			if (rs != null) rs.close();
-			if (stmt!= null) stmt.close();
-			if (conn!=null) conn.close();
+			if(sql!=null) sql.close();
 		}
 	}
 	
 	public static List<Post> getPostFormBoard(String boardId, int count, int page) throws NamingException, SQLException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
+		WPSQL sql = new WPSQL("SELECT * FROM post WHERE boardId = ? ORDER BY postNo DESC LIMIT ? OFFSET ?");
 		List<Post> postList = new ArrayList<Post>();
 		try {
-			String sql = "SELECT * FROM post WHERE boardId = ? ORDER BY postNo DESC LIMIT ? OFFSET ?";
+			sql.setArgs(boardId, count, (page-1)*count);
 			
-			conn = ConnectionPool.get();
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, boardId);
-			stmt.setInt(2, count);
-			stmt.setInt(3, (page-1)*count);
-			
-			rs = stmt.executeQuery();
-			int skipCount = count * (page-1);
-			if (skipCount < 0) skipCount = 0;
+			ResultSet rs = sql.query();
 		    while(rs.next()) {
 		    	Post post = new Post();
 		    	modifyPost(post, rs);
@@ -56,9 +38,7 @@ public class PostAPI {
 		    return postList;
 		}
 		finally {
-			if (rs != null) rs.close();
-			if (stmt!= null) stmt.close();
-			if (conn!=null) conn.close();
+			sql.close();
 		}
 	}
 	
