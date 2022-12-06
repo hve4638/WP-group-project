@@ -3,15 +3,15 @@ package wp;
 public class Post {
 	private int postNo;
 	private String title;
-	private String userid;
 	private String content;
 	private String date;
 	private int view;
 	private int recommend;
 	private String boardId;
+	User user;
 	
 	public User getUser() {
-		return null; //?
+		return user; //?
 	}
 	public int getPostNo() {
 		return postNo;
@@ -25,11 +25,8 @@ public class Post {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getUserid() {
-		return userid;
-	}
-	public void setUserid(String userid) {
-		this.userid = userid;
+	public void setUser(User user) {
+		this.user = user;
 	}
 	public String getContent() {
 		return content;

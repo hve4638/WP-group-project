@@ -3,8 +3,8 @@ import util.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.naming.NamingException;
 
+import javax.naming.NamingException;
 
 public class PostAPI {
 	public static int getPostAmount(String boardId) throws NamingException, SQLException {
@@ -41,35 +41,47 @@ public class PostAPI {
 			sql.close();
 		}
 	}
+
+	public static List<Post> getPostFormBoard(String boardId, int count, int page, String search) throws NamingException, SQLException {
+		return searchPosts(boardId, count, page, search);
+	}
 	
-	public static List<Post> getRecommendPosts(int count, int page) throws NamingException, SQLException{
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
+	public static List<Post> searchPosts(String boardId, int count, int page, String search) throws NamingException, SQLException {
+		WPSQL sql = new WPSQL("SELECT * FROM post WHERE boardId = '"+boardId+"' AND title LIKE '%"+search+"%' ORDER BY postNo DESC LIMIT ? OFFSET ?");
 		List<Post> postList = new ArrayList<Post>();
 		try {
-			String sql = "SELECT * FROM post WHERE recommend > 9 AND ORDER BY postNo DESC";
-			
-			conn = ConnectionPool.get();
-			stmt = conn.prepareStatement(sql);
-
-			rs = stmt.executeQuery();
+			sql.setArgs(count, (page-1)*count);
+			ResultSet rs = sql.query();
 		    while(rs.next()) {
 		    	Post post = new Post();
 		    	modifyPost(post, rs);
 		    	postList.add(post);
 		    }
 		    
-		    for(int i = ((page-1)*10); i<page+count; i++) {
-		    	postList.get(i);
+		    return postList;
+		}
+		finally {
+			sql.close();
+		}
+	}
+	
+	public static List<Post> getRecommendPosts(int count, int page) throws NamingException, SQLException{
+		WPSQL sql = null;
+		List<Post> postList = new ArrayList<Post>();
+		try {
+			sql = new WPSQL("SELECT * FROM post WHERE recommend > 9 AND ORDER BY postNo DESC");
+			ResultSet rs = sql.query();
+
+		    while(rs.next()) {
+		    	Post post = new Post();
+		    	modifyPost(post, rs);
+		    	postList.add(post);
 		    }
 		    
 		    return postList;
 		}
 	    finally {
-			if (rs != null) rs.close();
-			if (stmt!= null) stmt.close();
-			if (conn!=null) conn.close();
+	    	sql.close();
 		}
 	}
 	
@@ -96,15 +108,18 @@ public class PostAPI {
 		}
 	}
 	
-	private static void modifyPost(Post post, ResultSet rs) throws SQLException {
+	private static void modifyPost(Post post, ResultSet rs) throws SQLException, NamingException {
 		post.setPostNo(rs.getInt(1));
     	post.setTitle(rs.getString(2));
-    	post.setUserid(rs.getString(3));
     	post.setContent(rs.getString(4));
     	post.setDate(rs.getString(5));
     	post.setView(rs.getInt(6));
     	post.setRecommend(rs.getInt(7));
     	post.setBoardId(rs.getString(8));
+    	
+    	String userId = rs.getString(3);
+    	User user = UserAPI.getUser(userId);
+    	post.setUser(user);
 	}
 	
 	public List<Comment> getComments(int postNo) throws NamingException, SQLException{
@@ -165,40 +180,35 @@ public class PostAPI {
 	}
 
 	private static int nextPostNo() throws NamingException, SQLException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		
-		String sql = "SELECT postNo FROM post ORDER BY postNo DESC";
-		conn = ConnectionPool.get();
-		stmt = conn.prepareStatement(sql);
+		WPSQL sql = null;
 		try {
-			rs = stmt.executeQuery();
+			sql = new WPSQL("SELECT postNo FROM post ORDER BY postNo DESC");
+			ResultSet rs = sql.query();
 			if(rs.next()) return rs.getInt(1) + 1;
 			else return 1;
-		}
-		catch(Exception e) {
+		} catch(Exception e) {
 			e.printStackTrace();
+			return -1;
 		}
-		return -1;
+		finally {
+			sql.close();
+		}
 	}
 
 	
 	private static String dateNow() throws NamingException, SQLException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		
-		String sql = "SELECT NOW()";
-		conn = ConnectionPool.get();
-		stmt = conn.prepareStatement(sql);
+		WPSQL sql = null;
 		try {
-			rs = stmt.executeQuery();
+			sql = new WPSQL("SELECT NOW()");
+			ResultSet rs = sql.query();
 			if(rs.next()) return rs.getString(1);
+			else return "";
 		} catch(Exception e) {
 			e.printStackTrace();
+			return "";
 		}
-		
-		return "";
+		finally {
+			sql.close();
+		}
 	}
 }
