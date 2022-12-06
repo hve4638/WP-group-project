@@ -8,7 +8,7 @@ String message;
 
 if (isSignIn) {
    User user = UserAPI.getSessionUser(session);
-   message = user.getName() + "님 반갑습니다";
+   message = user.getName() + " 님 반갑습니다";
 } else {
    message = "환영합니다";
 }
@@ -36,27 +36,25 @@ if (isSignIn) {
       
         
          <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-               
-                  <% 
-                  if(!isSignIn){ 
-                  %>
-                  <a href="#" class="dropdown-toggle"
-                  data-toggle="dropdown" role="button" aria-haspopup="true"
-                  aria-expanded="false" style="padding-right:40px;"><%=message %><span class="caret"></span></a>
-                     <ul class="dropdown-menu">
-                        <li class="active"><a href="login.html">로그인</a></li>
-                        <li><a href="signup.html">회원가입</a></li>
-                     </ul>
-                  <%} else {%>
-                  <a href="#" class="dropdown-toggle"
-                  data-toggle="dropdown" role="button" aria-haspopup="true"
-                  aria-expanded="false" style="padding-right:40px;"><%=message %><span class="caret"></span></a>
-                     <ul class="dropdown-menu">
-                        <li class="active"><a href="logout.jsp">로그아웃</a></li>
-                     </ul>
-                  <%}%>
-            </li>
+         	<div style="height: 50px; line-height: 20px; padding: 15px 15px;">
+         		<span style="padding: 5px 5px; color: #777;">
+         		<%= message %>
+         		</span>
+         		<% if (isSignIn) { %>
+				<span style="padding: 5px 5px;">
+                	<a href="logout.jsp" style="color: inherit;">로그아웃</a>
+         		</span>
+         		<% } else { %>
+				<span style="padding: 5px 5px;">
+                	<a href="login.html" style="color: inherit;">로그인</a>
+         		</span>
+				<span style="padding: 5px 5px;">
+                	<a href="signup.html" style="color: inherit;">회원가입</a>
+         		</span>
+         		<% }%>
+				<span style="padding: 5px 5px;">
+         		</span>
+         	</div>
          </ul>
      
    </nav>
@@ -64,3 +62,31 @@ if (isSignIn) {
    <script src="js/bootstrap.js"></script>
 </body>
 </html>
+
+
+<%-- 
+
+
+   <li class="dropdown">
+      
+         <% 
+         if(!isSignIn){ 
+         %>
+         	
+         <a href="#" class="dropdown-toggle"
+         data-toggle="dropdown" role="button" aria-haspopup="true"
+         aria-expanded="false" style="padding-right:40px;"><%=message %><span class="caret"></span></a>
+            <ul class="dropdown-menu">
+               <li class="active"><a href="login.html">로그인</a></li>
+               <li><a href="signup.html">회원가입</a></li>
+            </ul>
+         <%} else {%>
+         <a href="#" class="dropdown-toggle"
+         data-toggle="dropdown" role="button" aria-haspopup="true"
+         aria-expanded="false" style="padding-right:40px;"><%=message %><span class="caret"></span></a>
+            <ul class="dropdown-menu">
+               <li class="active"><a href="logout.jsp">로그아웃</a></li>
+            </ul>
+         <%}%>
+   </li>
+--%>

@@ -122,13 +122,13 @@ public class PostAPI {
     	post.setUser(user);
 	}
 	
-	public List<Comment> getComments(int postNo) throws NamingException, SQLException{
+	public static List<Comment> getComments(int postNo) throws NamingException, SQLException{
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		ArrayList<Comment> c = new ArrayList<Comment>();
 		try {
-			String sql = "SELECT * FROM comment WHERE ? ORDER BY date DESC";
+			String sql = "SELECT * FROM comment WHERE postNo = ? ORDER BY date DESC";
 			
 			conn = ConnectionPool.get();
 			stmt = conn.prepareStatement(sql);
@@ -139,8 +139,14 @@ public class PostAPI {
 		    	Comment K = new Comment();
 		    	K.setPostNo(rs.getInt(1));
 		    	K.setDate(rs.getString(2));
-		    	K.setUserid(rs.getString(3));
 		    	K.setContent(rs.getString(4));
+		    	String uid = rs.getString(3);
+		    	User user = UserAPI.getUser(uid);
+		    	
+		    	K.setUser(user);
+		    	
+		    	
+
 		    	c.add(K);
 		    }
 		}
@@ -178,6 +184,20 @@ public class PostAPI {
 			if(conn!=null) conn.close();
 		}
 	}
+	
+	public static boolean uploadComment(int postNo, String userId, String contents) throws NamingException, SQLException {
+		WPSQL sql = null;
+		try {
+			sql = new WPSQL("INSERT INTO comment VALUES (?, ?, ?, ?, ?)");
+			sql.setArgs(postNo, dateNow(), userId, contents, nextCommentNo());
+			
+			return sql.update();
+		}
+		finally {
+			sql.close();
+		}
+	}
+
 
 	private static int nextPostNo() throws NamingException, SQLException {
 		WPSQL sql = null;
@@ -185,6 +205,22 @@ public class PostAPI {
 			sql = new WPSQL("SELECT postNo FROM post ORDER BY postNo DESC");
 			ResultSet rs = sql.query();
 			if(rs.next()) return rs.getInt(1) + 1;
+			else return 1;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+		finally {
+			sql.close();
+		}
+	}
+	
+	private static int nextCommentNo() throws NamingException, SQLException {
+		WPSQL sql = null;
+		try {
+			sql = new WPSQL("SELECT id FROM comment ORDER BY id DESC");
+			ResultSet rs = sql.query();
+			if(rs.next()) return rs.getInt("id") + 1;
 			else return 1;
 		} catch(Exception e) {
 			e.printStackTrace();

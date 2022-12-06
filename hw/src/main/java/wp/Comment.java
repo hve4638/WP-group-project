@@ -3,11 +3,14 @@ package wp;
 public class Comment {
 	private String date;
 	private int postNo;
-	private String userid;
 	private String content;
-	
+	private User user;
+
 	public User getUser() {
-		return null; //?
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
 	}
 	public String getDate() {
 		return date;
@@ -21,22 +24,10 @@ public class Comment {
 	public void setPostNo(int postNo) {
 		this.postNo = postNo;
 	}
-	public String getUserid() {
-		return userid;
-	}
-	public void setUserid(String userid) {
-		this.userid = userid;
-	}
 	public String getContent() {
 		return content;
 	}
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
-	
-	
-	
-	
-	
 }

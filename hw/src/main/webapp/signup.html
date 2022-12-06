@@ -2,17 +2,34 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>회원가입 페이지</title>
+<meta name="viewport" content="width=device-width", initial-scale="1">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<title>로그인</title>
 </head>
 <body>
-<form action="signup.jsp" method="post">
-<pre>
-아이디 : <input type=text name=id>
-비밀번호 : <input type=password name=pw>
-이름 : <input type=text name=name>
-<input type=submit value="회원가입">
 
-</pre>
-</form>
+   <div class="container">
+      <div class="col-lg-4"></div>
+      <div class="col-lg-4">
+         <div class="jumbotron" style="padding-top: 20px;">
+            <form method="post" action="signup.jsp">
+               <h3 style="text-align: center;">회원가입</h3>
+               <div class="form-group">
+                  <input type="text" class="form-control" placeholder="아이디" name="id" maxlength="20">
+               </div>
+               <div class="form-group">
+                  <input type="password" class="form-control" placeholder="비밀번호" name="pw" maxlength="20">
+               </div>
+               <div class="form-group">
+                  <input type="text" class="form-control" placeholder="이름" name="name" maxlength="20">
+               </div>
+               <input type="submit" class="btn btn-primary form-control" value="회원가입">
+             </form>
+             </div>
+      </div>
+   </div>
+   <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+   <script src="js/bootstrap.js"></script>
+   
 </body>
 </html>

@@ -62,6 +62,7 @@
             </tbody>
          </table>
             <input type=hidden name=boardId value=<%= boardId %>>
+         	<a href="board.jsp?boardId=<%= boardId %>" class="btn btn-primary">목록</a>
             <input type="submit" class="btn btn-primary pull-right" value="글쓰기">
          </form>
       </div>

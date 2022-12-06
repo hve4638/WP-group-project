@@ -23,13 +23,14 @@ public class WPSQL {
 		setArgs(args);
 	}
 	
-	public ResultSet query(Object...args) throws NamingException, SQLException {
+	public ResultSet query() throws NamingException, SQLException {
 		rs = stmt.executeQuery();
 		return rs;
 	}
 	
-	public boolean update(String sql, Object...args) throws SQLException, NamingException {
+	public boolean update() throws SQLException, NamingException {
 		int count = stmt.executeUpdate();
+		System.out.print("update! result:" + count);
 		return (count > 0) ? true : false;
 	}
 	

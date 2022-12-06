@@ -59,8 +59,9 @@
             </tbody>
          </table>
          <a href="board.jsp?boardId=<%= boardId %>" class="btn btn-primary">목록</a>
-            <input type="submit" class="btn btn-primary pull-right" value="글쓰기">
-      </div>
+         <a class="btn btn-primary pull-right" href="write.jsp?boardId=<%=boardId%>">글쓰기</a>	
+   		<jsp:include page="comment.jsp" />
+      </div> 
    </div>
    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
    <script src="js/bootstrap.js"></script>
